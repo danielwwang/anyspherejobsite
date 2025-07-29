@@ -5,15 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cursor - Engineering Genius</title>
   <style>
-    body {
+    html, body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #191C24;
+      color: #ffffff;
+      min-height: 100vh;
+      overscroll-behavior: none;
+      scroll-behavior: smooth;
+    }
+    
+    html {
+      overflow-x: hidden;
+    }
+    
+    .hero-section {
+      width: 100%;
+      height: 50vh;
+      background: url('cosmic-background.jpg') center/cover no-repeat;
+    }
+    
+    .content-container {
       max-width: 1000px;
       margin: 0 auto;
       padding: 40px 20px;
-      background: #0a0a0a;
-      color: #ffffff;
-      min-height: 100vh;
+      background: #191C24;
     }
     
     .hero-video {
@@ -77,7 +95,7 @@
     }
     
     .job-category {
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
     
     .category-title {
@@ -92,7 +110,7 @@
     .job-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 2rem;
+      margin-bottom: 0.5rem;
     }
     
     .job-table tr {
@@ -138,12 +156,14 @@
       color: #6366f1;
     }
   </style>
-</head>
-<body>
-  <h1>Engineering Genius</h1>
-  
-  <div class="description">
-    <p>Cursor is an applied research lab working on automating coding. Our approach is to build the engineer of the future: a human-AI programmer that's an order of magnitude more effective than any one programmer.</p>
+  </head>
+  <body>
+    <div class="hero-section"></div>
+    <div class="content-container">
+    <h1>Engineering Genius</h1>
+    
+    <div class="description">
+    <p>Anysphere is an applied research lab working on automating coding. Our approach is to build the engineer of the future: a human-AI programmer that's an order of magnitude more effective than any one programmer.</p>
     
     <p>This hybrid engineer will have effortless control over their codebase and no low-entropy keystrokes. They will iterate at the speed of their judgment, even in the most complex systems. Using a combination of AI and human ingenuity, they will out-smart and out-engineer the best pure-AI system.</p>
     
@@ -152,7 +172,7 @@
     <p>If this excites you, we'd love to hear from you.</p>
     
     <div class="signature">
-      — The Cursor Team
+      — Aman, Sualeh, Michael, Arvid, and the entire Anysphere team
     </div>
   </div>
   
@@ -173,7 +193,7 @@
       <div class="category-title">Engineering</div>
       <table class="job-table">
         <tr>
-          <td><a href="generalist.html" class="job-link">Generalist</a></td>
+          <td><a href="generalist.html" class="job-link">Generalist Engineer</a></td>
           <td class="location">San Francisco</td>
         </tr>
         <tr>
@@ -188,7 +208,7 @@
           <td><a href="enterprise-product-engineer.html" class="job-link">Enterprise Product Engineer</a></td>
           <td class="location">San Francisco</td>
         </tr>
-        <tr>
+        <tr style="border-bottom: none;">
           <td><a href="infrastructure-engineer.html" class="job-link">Infrastructure Engineer</a></td>
           <td class="location">San Francisco</td>
         </tr>
@@ -202,15 +222,13 @@
           <td><a href="emerging-enterprise.html" class="job-link">Emerging Enterprise</a></td>
           <td class="location">San Francisco</td>
         </tr>
-        <tr>
+        <tr style="border-bottom: none;">
           <td><a href="enterprise-ae.html" class="job-link">Enterprise AE</a></td>
           <td class="location">San Francisco</td>
         </tr>
       </table>
     </div>
   </div>
-  
-  <div class="contact-info">
   </div>
 </body>
 </html>
