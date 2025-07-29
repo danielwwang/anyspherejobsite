@@ -250,7 +250,7 @@
           
           <div class="question-section">
             <div class="question-title">Please write a short note on a project you're proud of: *</div>
-            <textarea placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
+            <textarea id="project-note" name="project-note" placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
           </div>
           
           <button type="submit" class="submit-btn">Submit Application 🚀</button>
@@ -267,13 +267,64 @@
     });
     
 
-    // Handle form submission - redirect to Ashby
-    document.getElementById('application-form').addEventListener('submit', function(e) {
+    // Handle form submission - submit directly to Ashby API
+    document.getElementById('application-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      // For now, redirect to the Ashby job page for application
-      // You can implement API submission here later if needed
-      window.open('https://jobs.ashbyhq.com/cursor/36e69353-0452-4bf6-9f35-b1e7307959a7', '_blank');
+            // Prepare data for our Vercel API
+      const applicationData = {
+        jobPostingId: '36e69353-0452-4bf6-9f35-b1e7307959a7',
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        linkedin: document.getElementById('linkedin').value,
+        github: document.getElementById('github').value,
+        projectNote: document.getElementById('project-note').value
+      };
+
+      // Handle resume file
+      const resumeFile = document.getElementById('resume').files[0];
+      if (resumeFile) {
+        // Convert file to base64 for JSON transfer
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          applicationData.resume = {
+            name: resumeFile.name,
+            type: resumeFile.type,
+            data: e.target.result.split(',')[1] // Remove data:... prefix
+          };
+          await submitApplication(applicationData);
+        };
+        reader.readAsDataURL(resumeFile);
+      } else {
+        await submitApplication(applicationData);
+      }
+
+      async function submitApplication(data) {
+        try {
+          console.log('Submitting via Vercel API...', data);
+          const response = await fetch('/api/submit-application', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          
+          const result = await response.json();
+          console.log('Response:', result);
+          
+          if (result.success) {
+            alert('Application submitted successfully!');
+            document.getElementById('application-form').reset();
+          } else {
+            alert('Error: ' + result.error);
+            console.error('Submission error:', result);
+          }
+        } catch (error) {
+          console.error('Fetch error:', error);
+          alert('Error submitting application. Please try again.');
+        }
+      }
     });
   </script>
 </body>

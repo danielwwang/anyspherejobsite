@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enterprise Product Engineer - Cursor</title>
+  <title>Product Engineer, Enterprise - Cursor</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -185,7 +185,7 @@
   <div class="content-wrapper">
     <div class="left-side">
       <div class="job-tag">Engineering, Full-time (San Francisco)</div>
-      <h1>Enterprise Product Engineer</h1>
+      <h1>Product Engineer, Enterprise</h1>
       
       <div style="margin-bottom: 2rem;">
         <button onclick="document.getElementById('application-section').scrollIntoView({behavior: 'smooth'})" style="background: white; color: black; border: none; border-radius: 6px; padding: 8px 16px; margin-right: 8px; cursor: pointer;">Apply</button>
@@ -196,25 +196,37 @@
     
     <div class="right-side">
       <div class="job-description">
-        <p>We're looking for an Enterprise Product Engineer to build features specifically for large enterprise customers. You'll work on scalability, security, and admin features that enable Fortune 500 companies to adopt Cursor.</p>
+        <h3>Role</h3>
+        <p>Product engineers create the software we ship to our users, in particular our editor. As a member of our core product team, you'll join us in inventing a new, better way to build software. In this role, you'll partner with the GTM team to build Cursor Enterprise, supporting the best engineering teams in the world.</p>
         
-        <h3>What you'll do:</h3>
+        <p>This is a rare opportunity where a PLG motion is getting pushed from the top down - every CTO wants to move to a more AI-native world.</p>
+        
+        <h3>Our Enterprise Impact</h3>
         <ul>
-          <li>Build enterprise-grade features like SSO, admin dashboards, and team management</li>
-          <li>Design and implement scalable architecture for large organizations</li>
-          <li>Work closely with enterprise customers to understand their unique needs</li>
-          <li>Ensure security and compliance standards for enterprise deployments</li>
-          <li>Collaborate with sales and success teams to unlock enterprise deals</li>
+          <li><strong>Over 60% of Fortune 1,000</strong> have engineers using Cursor</li>
+          <li><strong>Over 1 billion lines of enterprise code</strong> generated per day</li>
+          <li><strong>50,000+ enterprises</strong> including NVIDIA, Uber, Adobe, OpenAI, Uber, Stripe, and Samsung</li>
+          <li><strong>Fastest enterprise adoption</strong> in developer tools history with CTOs driving top-down AI transformation</li>
         </ul>
         
-        <h3>What we're looking for:</h3>
+        <h3>You might be a fit if...</h3>
         <ul>
-          <li>5+ years of experience building enterprise software products</li>
-          <li>Strong backend engineering skills with focus on scalability</li>
-          <li>Experience with enterprise integrations (SSO, LDAP, API design)</li>
-          <li>Understanding of enterprise security and compliance requirements</li>
-          <li>Experience working directly with enterprise customers</li>
+          <li>You have an entrepreneurial spirit and love creating outsized business impact.</li>
+          <li>You want to be at the frontier of AI transformation with the best companies in the world.</li>
+          <li>You're passionate about building great products that blend excellent engineering with a taste for models and design.</li>
+          <li>You have a propensity for creative ideas and have a knack for making powerful tools without compromising their ease-of-use.</li>
         </ul>
+        
+        <h3>About</h3>
+        <p>We're Anysphere, the team behind Cursor.</p>
+        
+        <p>Our mission is to automate coding. The first step in our journey is to build the best tool for professional programmers, using a combination of inventive research, design, and engineering.</p>
+        
+        <p>We're a group of engineers and scientists who've built well-known products, created large OSS projects, started productive businesses, won olympiad medals, and published significant research.</p>
+        
+        <p>Our organization is very flat, and our team is small and talent dense. We particularly like people who are truthseeking, passionate, and creative. We enjoy spirited debate, crazy ideas, and shipping code.</p>
+        
+        <p>We're in-person in a cozy office in North Beach, San Francisco, replete with a well-stocked library. Our investors include Andreessen Horowitz, OpenAI, Jeff Dean, John Schulman, and the founders of Stripe and Github.</p>
       </div>
       
       <div id="application-section" class="form-container" style="margin-top: 3rem;">
@@ -250,7 +262,7 @@
           
           <div class="question-section">
             <div class="question-title">Please write a short note on a project you're proud of: *</div>
-            <textarea placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
+            <textarea id="project-note" name="project-note" placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
           </div>
           
           <button type="submit" class="submit-btn">Submit Application 🚀</button>
@@ -267,13 +279,42 @@
     });
     
 
-    // Handle form submission - redirect to Ashby
-    document.getElementById('application-form').addEventListener('submit', function(e) {
+    // Handle form submission - submit directly to Ashby API
+    document.getElementById('application-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      // For now, redirect to the Ashby job page for application
-      // You can implement API submission here later if needed
-      window.open('https://jobs.ashbyhq.com/cursor/54a9cfcd-570a-4e9c-b52c-bd2336c60991', '_blank');
+      // Create form data for Ashby API
+      const formData = new FormData();
+      formData.append('jobPostingId', '54a9cfcd-570a-4e9c-b52c-bd2336c60991');
+      formData.append('applicationForm', JSON.stringify({
+                 "fieldSubmissions": [
+           {"path": "_systemfield_name", "value": document.getElementById('name').value},
+           {"path": "_systemfield_email", "value": document.getElementById('email').value},
+           {"path": "_systemfield_resume", "value": "resume_file"},
+           {"path": "_systemfield_linkedin", "value": document.getElementById('linkedin').value},
+           {"path": "_systemfield_github", "value": document.getElementById('github').value},
+           {"path": "_systemfield_cover_letter", "value": document.getElementById('project-note').value}
+         ]
+      }));
+      formData.append('resume_file', document.getElementById('resume').files[0]);
+      
+      try {
+        const response = await fetch('https://api.ashbyhq.com/applicationForm.submit', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Basic ' + btoa('993bacaa33cbb97dbe1e92b12d9682887c2f126e3a68bc32b925222b32d7a216:')
+          },
+          body: formData
+        });
+        
+        if (response.ok) {
+          alert('Application submitted successfully!');
+        } else {
+          alert('Error submitting application. Please try again.');
+        }
+      } catch (error) {
+        alert('Error submitting application. Please try again.');
+      }
     });
   </script>
 </body>

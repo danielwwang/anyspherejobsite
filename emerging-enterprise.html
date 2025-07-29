@@ -250,7 +250,7 @@
           
           <div class="question-section">
             <div class="question-title">Please write a short note on a project you're proud of: *</div>
-            <textarea placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
+            <textarea id="project-note" name="project-note" placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
           </div>
           
           <button type="submit" class="submit-btn">Submit Application 🚀</button>
@@ -267,13 +267,42 @@
     });
     
 
-    // Handle form submission - redirect to Ashby
-    document.getElementById('application-form').addEventListener('submit', function(e) {
+    // Handle form submission - submit directly to Ashby API
+    document.getElementById('application-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      // For now, redirect to the Ashby job page for application
-      // You can implement API submission here later if needed
-      window.open('https://jobs.ashbyhq.com/cursor/61e4677d-cf3d-458a-bf6c-02287d5d2c39', '_blank');
+      // Create form data for Ashby API
+      const formData = new FormData();
+      formData.append('jobPostingId', '61e4677d-cf3d-458a-bf6c-02287d5d2c39');
+      formData.append('applicationForm', JSON.stringify({
+                 "fieldSubmissions": [
+           {"path": "_systemfield_name", "value": document.getElementById('name').value},
+           {"path": "_systemfield_email", "value": document.getElementById('email').value},
+           {"path": "_systemfield_resume", "value": "resume_file"},
+           {"path": "_systemfield_linkedin", "value": document.getElementById('linkedin').value},
+           {"path": "_systemfield_github", "value": document.getElementById('github').value},
+           {"path": "_systemfield_cover_letter", "value": document.getElementById('project-note').value}
+         ]
+      }));
+      formData.append('resume_file', document.getElementById('resume').files[0]);
+      
+      try {
+        const response = await fetch('https://api.ashbyhq.com/applicationForm.submit', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Basic ' + btoa('993bacaa33cbb97dbe1e92b12d9682887c2f126e3a68bc32b925222b32d7a216:')
+          },
+          body: formData
+        });
+        
+        if (response.ok) {
+          alert('Application submitted successfully!');
+        } else {
+          alert('Error submitting application. Please try again.');
+        }
+      } catch (error) {
+        alert('Error submitting application. Please try again.');
+      }
     });
   </script>
 </body>
