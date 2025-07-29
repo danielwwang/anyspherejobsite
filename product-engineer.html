@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Engineer - Cursor</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #0a0a0a;
+      color: #ffffff;
+      min-height: 100vh;
+    }
+    .back-link {
+      color: #888;
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      display: inline-block;
+    }
+    .back-link:hover {
+      color: #6366f1;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .content-wrapper {
+      display: flex;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+    .left-side {
+      flex: 0 0 400px;
+      position: sticky;
+      top: 2rem;
+      height: fit-content;
+    }
+    .right-side {
+      flex: 1;
+      max-width: 600px;
+    }
+    .job-tag {
+      display: inline-block;
+      background: #1a1a1a;
+      color: #888;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .form-container {
+      background: #111111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 24px;
+      scroll-margin-top: 2rem;
+    }
+    .autofill-section {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .autofill-text {
+      color: #cccccc;
+    }
+    .upload-btn {
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #ffffff;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      box-sizing: border-box;
+      background: #1a1a1a;
+      color: #ffffff;
+    }
+    input:focus, textarea:focus {
+      border-color: #6366f1;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+    input::placeholder, textarea::placeholder {
+      color: #666;
+    }
+    .file-input {
+      border: 2px dashed #333;
+      padding: 40px 20px;
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #1a1a1a;
+      transition: border-color 0.2s;
+    }
+    .file-input:hover {
+      border-color: #6366f1;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+    .submit-btn:hover {
+      background: #5855eb;
+    }
+    .question-section {
+      margin-top: 2rem;
+    }
+    .question-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+    .question-description {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    ul {
+      color: #888;
+      margin-left: 1rem;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
+    .job-description {
+      color: #cccccc;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+    .job-description h3 {
+      color: #ffffff;
+      font-size: 1.2rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-link">← Back to Careers</a>
+  
+  <div class="content-wrapper">
+    <div class="left-side">
+      <div class="job-tag">Engineering, Full-time (San Francisco)</div>
+      <h1>Product Engineer</h1>
+      
+      <div style="margin-bottom: 2rem;">
+        <button onclick="document.getElementById('application-section').scrollIntoView({behavior: 'smooth'})" style="background: white; color: black; border: none; border-radius: 6px; padding: 8px 16px; margin-right: 8px; cursor: pointer;">Apply</button>
+        <button style="background: transparent; color: #888; border: 1px solid #333; border-radius: 6px; padding: 8px 16px; cursor: pointer;">Refer someone</button>
+      </div>
+    </div>
+    
+    <div class="right-side">
+      <div class="job-description">
+        <p>We're looking for a Product Engineer to build the future of AI-assisted coding. You'll ship features that millions of developers use daily while working at the intersection of product and engineering.</p>
+        
+        <h3>What you'll do:</h3>
+        <ul>
+          <li>Build and ship product features end-to-end, from conception to deployment</li>
+          <li>Work closely with design and product teams to create intuitive user experiences</li>
+          <li>Optimize performance and reliability for millions of daily active users</li>
+          <li>Collaborate with AI researchers to integrate cutting-edge models into the product</li>
+          <li>Shape product direction through user research and data analysis</li>
+        </ul>
+        
+        <h3>What we're looking for:</h3>
+        <ul>
+          <li>3+ years of experience building user-facing products</li>
+          <li>Strong full-stack engineering skills (TypeScript, React, Node.js)</li>
+          <li>Experience with desktop applications (Electron preferred)</li>
+          <li>Product mindset with focus on user experience and impact</li>
+          <li>Experience working with AI/ML systems is a plus</li>
+        </ul>
+      </div>
+      
+      <div id="application-section" class="form-container" style="margin-top: 3rem;">
+
+        <form id="application-form">
+          <div class="form-group">
+            <label for="name">Name *</label>
+            <input type="text" id="name" name="name" placeholder="Type here..." required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" placeholder="hello@example.com..." required>
+          </div>
+          
+          <div class="form-group">
+            <label for="resume">Resume *</label>
+            <div class="file-input" onclick="document.getElementById('resume').click()">
+              <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required style="display: none;">
+              <span id="file-text">📎 Upload File or drag and drop here</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="linkedin">LinkedIn URL *</label>
+            <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="github">GitHub Profile *</label>
+            <input type="url" id="github" name="github" placeholder="https://github.com/yourusername" required>
+          </div>
+          
+          <div class="question-section">
+            <div class="question-title">Please write a short note on a project you're proud of: *</div>
+            <textarea placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
+          </div>
+          
+          <button type="submit" class="submit-btn">Submit Application 🚀</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('resume').addEventListener('change', function(e) {
+      const fileName = e.target.files[0]?.name;
+      document.getElementById('file-text').textContent = fileName || '📎 Upload File or drag and drop here';
+    });
+    
+    document.getElementById('application-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      window.open('https://jobs.ashbyhq.com/cursor/3551cdaa-cf08-4c04-adbe-a968185bc769', '_blank');
+    });
+  </script>
+</body>
+</html> 
