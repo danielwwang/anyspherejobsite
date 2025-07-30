@@ -60,9 +60,10 @@ export default async function handler(req, res) {
       "fieldSubmissions": [
         {"path": "_systemfield_name", "value": name},
         {"path": "_systemfield_email", "value": email},
-        {"path": "_systemfield_linkedin", "value": linkedin},
-        {"path": "_systemfield_github", "value": github},
-        {"path": "_systemfield_cover_letter", "value": projectNote}
+        // {"path": "_systemfield_resume", "value": "resume_file"}, // Temporarily commented out
+        {"path": "6dd7d493-5687-4ffd-b7f3-ee9fd8f87b04", "value": linkedin}, // LinkedIn URL field
+        {"path": "78a43fa2-1534-419f-a45c-61b72c904059", "value": github}, // GitHub Profile field
+        {"path": "20c3128e-1abb-4d7c-bbad-62932b8e2600", "value": projectNote} // Project note field
       ]
     }));
     
