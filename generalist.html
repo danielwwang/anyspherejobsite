@@ -313,17 +313,18 @@
           const result = await response.json();
           console.log('Response:', result);
           
-          if (result.success) {
-            alert('Application submitted successfully!');
-            document.getElementById('application-form').reset();
-          } else {
-            alert('Error: ' + result.error);
-            console.error('Submission error:', result);
-          }
-        } catch (error) {
-          console.error('Fetch error:', error);
-          alert('Error submitting application. Please try again.');
+                  if (response.ok && result.success) {
+          alert('Application submitted successfully! 🎉');
+          document.getElementById('application-form').reset();
+          document.getElementById('file-text').textContent = '📎 Upload File or drag and drop here';
+        } else {
+          console.error('❌ Application failed:', result);
+          alert('Error submitting application: ' + (result.error || 'Please try again.'));
         }
+      } catch (error) {
+        console.error('❌ Network error:', error);
+        alert('Error submitting application. Please check your connection and try again.');
+      }
       }
     });
   </script>
