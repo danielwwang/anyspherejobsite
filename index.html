@@ -3,38 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Join Anysphere - Building the future of AI-assisted coding with Cursor">
+  <meta name="keywords" content="cursor, anysphere, engineering, ai coding, software jobs">
   <title>Cursor - Engineering Genius</title>
   <style>
-    html {
-      background: #191C24;
+    :root {
+      --bg-primary: #191C24;
+      --text-primary: #ffffff;
+      --text-secondary: #cccccc;
+      --text-muted: #888;
+      --accent-color: #6366f1;
+      --accent-hover: #5855eb;
+      --border-color: #333;
+      --container-max-width: 1000px;
+      --spacing-sm: 1rem;
+      --spacing-md: 2rem;
+      --spacing-lg: 3rem;
+      --spacing-xl: 4rem;
     }
     
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      line-height: 1.6;
-      margin: 0;
-      padding: 0;
-      background: #191C24;
-      color: #ffffff;
-      min-height: 100vh;
+    * {
+      box-sizing: border-box;
+    }
+    
+    html {
+      background: var(--bg-primary);
+      overflow-x: hidden;
       scroll-behavior: smooth;
     }
     
-    html {
-      overflow-x: hidden;
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
     }
     
     .hero-section {
       width: 100%;
       height: 50vh;
       background: url('cosmic-background.jpg') center/cover no-repeat;
+      position: relative;
+    }
+    
+    .hero-section::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, transparent 0%, var(--bg-primary) 100%);
     }
     
     .content-container {
-      max-width: 1000px;
+      max-width: var(--container-max-width);
       margin: 0 auto;
-      padding: 40px 20px;
-      background: #191C24;
+      padding: var(--spacing-xl) var(--spacing-sm);
+      background: var(--bg-primary);
     }
     
     .hero-video {
@@ -58,21 +87,34 @@
       .hero-video iframe {
         height: 250px;
       }
+      
+      .content-container {
+        padding: var(--spacing-md) var(--spacing-sm);
+      }
+      
+      .hero-section {
+        height: 40vh;
+      }
+      
+      .job-table td {
+        padding: 0.75rem 0;
+      }
     }
     
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 2rem;
+    .main-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: var(--spacing-md);
       font-weight: 700;
-      color: #ffffff;
+      color: var(--text-primary);
       text-align: left;
+      line-height: 1.2;
     }
     
     .description {
       font-size: 1.1rem;
       line-height: 1.8;
-      color: #cccccc;
-      margin-bottom: 3rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--spacing-lg);
       max-width: 800px;
     }
     
@@ -81,31 +123,31 @@
     }
     
     .signature {
-      margin-top: 2rem;
+      margin-top: var(--spacing-md);
       font-style: italic;
-      color: #888;
+      color: var(--text-muted);
     }
     
     .careers-section {
-      margin-top: 4rem;
+      margin-top: var(--spacing-xl);
     }
     
     .careers-title {
       font-size: 1.5rem;
       font-weight: 600;
-      margin-bottom: 2rem;
-      color: #ffffff;
+      margin-bottom: var(--spacing-md);
+      color: var(--text-primary);
     }
     
     .job-category {
-      margin-bottom: 1rem;
+      margin-bottom: var(--spacing-sm);
     }
     
     .category-title {
       font-size: 1.2rem;
       font-weight: 600;
-      color: #888;
-      margin-bottom: 1rem;
+      color: var(--text-muted);
+      margin-bottom: var(--spacing-sm);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -117,53 +159,72 @@
     }
     
     .job-table tr {
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.2s ease;
+    }
+    
+    .job-table tr:hover {
+      background-color: rgba(255, 255, 255, 0.02);
     }
     
     .job-table td {
-      padding: 1rem 0;
+      padding: var(--spacing-sm) 0;
       vertical-align: middle;
     }
     
     .job-link {
-      color: #ffffff;
+      color: var(--text-primary);
       text-decoration: none;
       font-size: 1rem;
-      transition: color 0.2s;
+      transition: color 0.2s ease;
+      position: relative;
     }
     
     .job-link:hover {
-      color: #6366f1;
+      color: var(--accent-color);
+    }
+    
+    .job-link:focus {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+      border-radius: 2px;
     }
     
     .location {
-      color: #888;
+      color: var(--text-muted);
       font-size: 0.9rem;
       text-align: right;
     }
     
     .contact-info {
-      margin-top: 3rem;
-      padding-top: 2rem;
-      border-top: 1px solid #333;
-      color: #888;
+      margin-top: var(--spacing-lg);
+      padding-top: var(--spacing-md);
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
       font-size: 0.95rem;
     }
     
     .contact-info a {
-      color: #cccccc;
+      color: var(--text-secondary);
       text-decoration: none;
+      transition: color 0.2s ease;
     }
     
     .contact-info a:hover {
-      color: #6366f1;
+      color: var(--accent-color);
+    }
+    
+    .contact-info a:focus {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+      border-radius: 2px;
     }
   </style>
   </head>
   <body>
     <div class="hero-section"></div>
     <div class="content-container">
-    <h1>Engineering Genius</h1>
+    <h1 class="main-title">Engineering Genius</h1>
     
     <div class="description">
     <p>Anysphere is an applied research lab working on automating coding. Our approach is to build the engineer of the future: a human-AI programmer that's an order of magnitude more effective than any one programmer.</p>
@@ -235,12 +296,69 @@
   </div>
   
   <script>
-    // Fetch job titles dynamically from Ashby
-    async function loadJobTitles() {
-      const jobLinks = document.querySelectorAll('.job-link[data-job-id]');
+    'use strict';
+    
+    class JobTitleLoader {
+      constructor() {
+        this.loadingStates = new Map();
+        this.retryCount = new Map();
+        this.maxRetries = 3;
+      }
       
-      for (const link of jobLinks) {
+      async loadJobTitles() {
+        const jobLinks = document.querySelectorAll('.job-link[data-job-id]');
+        
+        if (!jobLinks.length) {
+          console.warn('No job links found with data-job-id attribute');
+          return;
+        }
+        
+        const loadPromises = Array.from(jobLinks).map(link => 
+          this.loadSingleJobTitle(link)
+        );
+        
+        try {
+          await Promise.allSettled(loadPromises);
+        } catch (error) {
+          console.error('Error in batch job title loading:', error);
+        }
+      }
+      
+      async loadSingleJobTitle(link) {
         const jobId = link.getAttribute('data-job-id');
+        
+        if (!jobId) {
+          console.warn('Job link missing data-job-id:', link);
+          return;
+        }
+        
+        if (this.loadingStates.get(jobId)) {
+          return; // Already loading
+        }
+        
+        this.loadingStates.set(jobId, true);
+        
+        try {
+          const data = await this.fetchJobTitle(jobId);
+          
+          if (data?.success && data?.title) {
+            link.textContent = data.title;
+            link.setAttribute('aria-label', `Apply for ${data.title}`);
+          } else {
+            console.error(`Failed to load title for ${jobId}:`, data?.error || 'Unknown error');
+            this.handleLoadError(link, jobId);
+          }
+        } catch (error) {
+          console.error(`Error loading title for ${jobId}:`, error);
+          this.handleLoadError(link, jobId);
+        } finally {
+          this.loadingStates.set(jobId, false);
+        }
+      }
+      
+      async fetchJobTitle(jobId) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
         
         try {
           const response = await fetch('/api/get-job-title', {
@@ -248,24 +366,42 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ jobPostingId: jobId })
+            body: JSON.stringify({ jobPostingId: jobId }),
+            signal: controller.signal
           });
           
-          const data = await response.json();
+          clearTimeout(timeoutId);
           
-          if (data.success) {
-            link.textContent = data.title;
-          } else {
-            console.error('Failed to load title for', jobId, data.error);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
+          
+          return await response.json();
         } catch (error) {
-          console.error('Error loading title for', jobId, error);
+          clearTimeout(timeoutId);
+          throw error;
+        }
+      }
+      
+      handleLoadError(link, jobId) {
+        const retries = this.retryCount.get(jobId) || 0;
+        
+        if (retries < this.maxRetries) {
+          this.retryCount.set(jobId, retries + 1);
+          setTimeout(() => {
+            this.loadSingleJobTitle(link);
+          }, Math.pow(2, retries) * 1000); // Exponential backoff
+        } else {
+          console.error(`Max retries reached for job ${jobId}`);
         }
       }
     }
     
-    // Load job titles when page loads
-    document.addEventListener('DOMContentLoaded', loadJobTitles);
+    // Initialize and load job titles when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      const loader = new JobTitleLoader();
+      loader.loadJobTitles();
+    });
   </script>
 </body>
 </html>

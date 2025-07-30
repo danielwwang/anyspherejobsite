@@ -19,32 +19,121 @@ if (typeof File === 'undefined') {
   };
 }
 
-export default async function handler(req, res) {
-  // Enable CORS for your domain
-  res.setHeader('Access-Control-Allow-Origin', '*');
+const ALLOWED_ORIGINS = [
+  'https://yourdomain.com',
+  'http://localhost:3000',
+  'http://localhost:8000'
+];
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_FILE_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+];
+
+function setCorsHeaders(req, res) {
+  const origin = req.headers.origin;
+  
+  if (process.env.NODE_ENV === 'development' || ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  }
+  
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+}
+
+function validateApplicationData(data) {
+  const errors = [];
+  
+  if (!data.jobPostingId || typeof data.jobPostingId !== 'string') {
+    errors.push('Invalid job posting ID');
+  }
+  
+  if (!data.name || typeof data.name !== 'string' || data.name.trim().length < 2) {
+    errors.push('Name must be at least 2 characters');
+  }
+  
+  if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    errors.push('Valid email address is required');
+  }
+  
+  if (data.linkedin && !data.linkedin.includes('linkedin.com')) {
+    errors.push('LinkedIn URL must be a valid LinkedIn profile');
+  }
+  
+  if (data.github && !data.github.includes('github.com')) {
+    errors.push('GitHub URL must be a valid GitHub profile');
+  }
+  
+  if (!data.projectNote || data.projectNote.trim().length < 10) {
+    errors.push('Project note must be at least 10 characters');
+  }
+  
+  return errors;
+}
+
+function validateResumeFile(resume) {
+  const errors = [];
+  
+  if (!resume || !resume.data) {
+    errors.push('Resume file is required');
+  } else {
+    const buffer = Buffer.from(resume.data, 'base64');
+    
+    if (buffer.length > MAX_FILE_SIZE) {
+      errors.push(`Resume file must be smaller than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+    }
+    
+    if (!ALLOWED_FILE_TYPES.includes(resume.type)) {
+      errors.push('Resume must be a PDF or Word document');
+    }
+  }
+  
+  return errors;
+}
+
+export default async function handler(req, res) {
+  setCorsHeaders(req, res);
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false,
+      error: 'Method not allowed',
+      allowedMethods: ['POST', 'OPTIONS']
+    });
   }
 
   try {
     const { jobPostingId, name, email, resume, linkedin, github, projectNote } = req.body;
 
-    // Log incoming request data
+    // Validate application data
+    const validationErrors = validateApplicationData(req.body);
+    const resumeErrors = validateResumeFile(resume);
+    const allErrors = [...validationErrors, ...resumeErrors];
+    
+    if (allErrors.length > 0) {
+      console.error('❌ Validation errors:', allErrors);
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        details: allErrors
+      });
+    }
+
+    // Log incoming request data (sanitized)
     console.log('📩 Received application data:', {
       jobPostingId,
-      name,
-      email,
-      linkedin,
-      github,
+      name: name.substring(0, 20) + '...',
+      email: email.replace(/(.{2}).*@/, '$1***@'),
+      hasLinkedIn: !!linkedin,
+      hasGitHub: !!github,
       hasResume: !!resume,
       projectNoteLength: projectNote?.length
     });
@@ -77,20 +166,40 @@ export default async function handler(req, res) {
         // Convert base64 to buffer
         const buffer = Buffer.from(resume.data, 'base64');
         
-        // Create a proper File object
-        const file = new File([buffer], resume.name || 'resume.pdf', {
-          type: resume.type || 'application/pdf'
+        // Validate file size and type again (defense in depth)
+        if (buffer.length > MAX_FILE_SIZE) {
+          throw new Error(`File too large: ${buffer.length} bytes`);
+        }
+        
+        if (!ALLOWED_FILE_TYPES.includes(resume.type)) {
+          throw new Error(`Invalid file type: ${resume.type}`);
+        }
+        
+        // Create a proper File object with sanitized filename
+        const sanitizedName = (resume.name || 'resume.pdf')
+          .replace(/[^a-zA-Z0-9.-]/g, '_')
+          .substring(0, 100);
+        
+        const file = new File([buffer], sanitizedName, {
+          type: resume.type
         });
         
         // Append the file to form data
         formData.append('resume_file', file);
-        console.log('📎 Resume file added:', resume.name, resume.type, buffer.length + ' bytes');
+        console.log('📎 Resume file processed:', {
+          originalName: resume.name,
+          sanitizedName,
+          type: resume.type,
+          size: buffer.length
+        });
       } catch (fileError) {
         console.error('❌ Error processing resume file:', fileError);
-        throw new Error('Failed to process resume file');
+        return res.status(400).json({
+          success: false,
+          error: 'Resume file processing failed',
+          details: fileError.message
+        });
       }
-    } else {
-      console.log('⚠️ No resume file provided');
     }
 
     console.log('🚀 Submitting to Ashby API...');
@@ -101,16 +210,27 @@ export default async function handler(req, res) {
 
     const apiKey = process.env.ASHBY_API_KEY;
     if (!apiKey) {
-      throw new Error('ASHBY_API_KEY environment variable not set');
+      console.error('❌ ASHBY_API_KEY environment variable not set');
+      return res.status(500).json({
+        success: false,
+        error: 'Server configuration error'
+      });
     }
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout for file upload
+    
     const response = await fetch('https://api.ashbyhq.com/applicationForm.submit', {
       method: 'POST',
       headers: {
-        'Authorization': 'Basic ' + Buffer.from(apiKey + ':').toString('base64')
+        'Authorization': 'Basic ' + Buffer.from(apiKey + ':').toString('base64'),
+        'User-Agent': 'Cursor-JobSite/1.0'
       },
-      body: formData
+      body: formData,
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     const responseText = await response.text();
 
@@ -144,11 +264,30 @@ export default async function handler(req, res) {
     }
 
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('Server error:', {
+      message: error.message,
+      stack: error.stack,
+      jobPostingId: req.body?.jobPostingId
+    });
+    
+    // Handle specific error types
+    if (error.name === 'AbortError') {
+      return res.status(408).json({
+        success: false,
+        error: 'Request timeout - please try again'
+      });
+    }
+    
+    if (error.message.includes('fetch')) {
+      return res.status(503).json({
+        success: false,
+        error: 'External service unavailable - please try again later'
+      });
+    }
+    
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      details: error.message
+      error: 'Internal server error - please try again later'
     });
   }
 } 
