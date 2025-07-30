@@ -196,23 +196,23 @@
       <div class="category-title">Engineering</div>
       <table class="job-table">
         <tr>
-          <td><a href="generalist.html" class="job-link">Generalist Engineer</a></td>
+          <td><a href="generalist.html" class="job-link" data-job-id="36e69353-0452-4bf6-9f35-b1e7307959a7">Generalist Engineer</a></td>
           <td class="location">San Francisco</td>
         </tr>
         <tr>
-          <td><a href="research-engineer.html" class="job-link">Research Engineer</a></td>
+          <td><a href="research-engineer.html" class="job-link" data-job-id="0aa0650b-f93c-416e-9e2f-4fdf1556fd14">Research Engineer</a></td>
           <td class="location">San Francisco</td>
         </tr>
         <tr>
-          <td><a href="product-engineer.html" class="job-link">Product Engineer</a></td>
+          <td><a href="product-engineer.html" class="job-link" data-job-id="3551cdaa-cf08-4c04-adbe-a968185bc769">Product Engineer</a></td>
           <td class="location">San Francisco</td>
         </tr>
         <tr>
-          <td><a href="enterprise-product-engineer.html" class="job-link">Enterprise Product Engineer</a></td>
+          <td><a href="enterprise-product-engineer.html" class="job-link" data-job-id="54a9cfcd-570a-4e9c-b52c-bd2336c60991">Enterprise Product Engineer</a></td>
           <td class="location">San Francisco</td>
         </tr>
         <tr style="border-bottom: none;">
-          <td><a href="infrastructure-engineer.html" class="job-link">Infrastructure Engineer</a></td>
+          <td><a href="infrastructure-engineer.html" class="job-link" data-job-id="6f92f594-f76c-47eb-8c45-09c6b140b512">Infrastructure Engineer</a></td>
           <td class="location">San Francisco</td>
         </tr>
       </table>
@@ -222,16 +222,50 @@
       <div class="category-title">Go-To-Market</div>
       <table class="job-table">
         <tr>
-          <td><a href="emerging-enterprise.html" class="job-link">Emerging Enterprise</a></td>
+          <td><a href="emerging-enterprise.html" class="job-link" data-job-id="61e4677d-cf3d-458a-bf6c-02287d5d2c39">Emerging Enterprise</a></td>
           <td class="location">San Francisco</td>
         </tr>
         <tr style="border-bottom: none;">
-          <td><a href="enterprise-ae.html" class="job-link">Enterprise AE</a></td>
+          <td><a href="enterprise-ae.html" class="job-link" data-job-id="635af96e-4fd6-458f-839c-06b9dde86559">Enterprise AE</a></td>
           <td class="location">San Francisco</td>
         </tr>
       </table>
     </div>
   </div>
   </div>
+  
+  <script>
+    // Fetch job titles dynamically from Ashby
+    async function loadJobTitles() {
+      const jobLinks = document.querySelectorAll('.job-link[data-job-id]');
+      
+      for (const link of jobLinks) {
+        const jobId = link.getAttribute('data-job-id');
+        
+        try {
+          const response = await fetch('/api/get-job-title', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ jobPostingId: jobId })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            link.textContent = data.title;
+          } else {
+            console.error('Failed to load title for', jobId, data.error);
+          }
+        } catch (error) {
+          console.error('Error loading title for', jobId, error);
+        }
+      }
+    }
+    
+    // Load job titles when page loads
+    document.addEventListener('DOMContentLoaded', loadJobTitles);
+  </script>
 </body>
 </html>

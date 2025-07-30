@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generalist - Cursor</title>
+  <title id="page-title">Generalist - Cursor</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -185,7 +185,7 @@
   <div class="content-wrapper">
     <div class="left-side">
       <div class="job-tag">Engineering, Full-time (San Francisco)</div>
-      <h1>Generalist</h1>
+      <h1 id="job-title">Generalist</h1>
       
       <div style="margin-bottom: 2rem;">
         <button onclick="document.getElementById('application-section').scrollIntoView({behavior: 'smooth'})" style="background: white; color: black; border: none; border-radius: 6px; padding: 8px 16px; margin-right: 8px; cursor: pointer;">Apply</button>
@@ -327,6 +327,34 @@
       }
       }
     });
+
+    // Load job title dynamically
+    async function loadJobTitle() {
+      const jobPostingId = '36e69353-0452-4bf6-9f35-b1e7307959a7'; // Current job ID
+      
+      try {
+        const response = await fetch('/api/get-job-title', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ jobPostingId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Update page title and H1
+          document.getElementById('page-title').textContent = data.title + ' - Cursor';
+          document.getElementById('job-title').textContent = data.title;
+        }
+      } catch (error) {
+        console.error('Error loading job title:', error);
+      }
+    }
+
+    // Load job title when page loads
+    document.addEventListener('DOMContentLoaded', loadJobTitle);
   </script>
 </body>
 </html> 
