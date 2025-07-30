@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
   try {
     const { jobPostingId, name, email, resume, linkedin, github, projectNote } = req.body;
-    
+
     // Log incoming request data
     console.log('📩 Received application data:', {
       jobPostingId,
@@ -60,37 +60,43 @@ export default async function handler(req, res) {
       "fieldSubmissions": [
         {"path": "_systemfield_name", "value": name},
         {"path": "_systemfield_email", "value": email},
-        // {"path": "_systemfield_resume", "value": "resume_file"}, // Temporarily commented out
+        {"path": "_systemfield_resume", "value": "resume_file"}, // Resume file reference
         {"path": "6dd7d493-5687-4ffd-b7f3-ee9fd8f87b04", "value": linkedin}, // LinkedIn URL field
         {"path": "78a43fa2-1534-419f-a45c-61b72c904059", "value": github}, // GitHub Profile field
         {"path": "20c3128e-1abb-4d7c-bbad-62932b8e2600", "value": projectNote} // Project note field
       ]
     }));
-    
-    // Temporarily skip file upload to test other fields
-    console.log('⚠️ Temporarily skipping file upload to test field validation');
-    
-    // TODO: Fix file upload later
-    // if (resume && resume.data) {
-    //   const buffer = Buffer.from(resume.data, 'base64');
-    //   const file = new File([buffer], resume.name || 'resume.pdf', {
-    //     type: resume.type || 'application/pdf'
-    //   });
-    //   formData.append('resume_file', file);
-    //   console.log('📎 Resume file added:', resume.name, resume.type, buffer.length + ' bytes');
-    // }
 
-    // Submit to Ashby API
-    const apiKey = process.env.ASHBY_API_KEY;
-    if (!apiKey) {
-      throw new Error('ASHBY_API_KEY environment variable not set');
+    // Add resume file if provided
+    if (resume && resume.data) {
+      try {
+        // Convert base64 to buffer
+        const buffer = Buffer.from(resume.data, 'base64');
+        
+        // Append the file buffer directly to form data
+        formData.append('resume_file', buffer, {
+          filename: resume.name || 'resume.pdf',
+          contentType: resume.type || 'application/pdf'
+        });
+        console.log('📎 Resume file added:', resume.name, resume.type, buffer.length + ' bytes');
+      } catch (fileError) {
+        console.error('❌ Error processing resume file:', fileError);
+        throw new Error('Failed to process resume file');
+      }
+    } else {
+      console.log('⚠️ No resume file provided');
     }
-    
+
     console.log('🚀 Submitting to Ashby API...');
     console.log('📝 Form data being sent:', {
       jobPostingId,
       fieldSubmissions: JSON.parse(formData.get('applicationForm')).fieldSubmissions
     });
+
+    const apiKey = process.env.ASHBY_API_KEY;
+    if (!apiKey) {
+      throw new Error('ASHBY_API_KEY environment variable not set');
+    }
 
     const response = await fetch('https://api.ashbyhq.com/applicationForm.submit', {
       method: 'POST',
@@ -101,12 +107,12 @@ export default async function handler(req, res) {
     });
 
     const responseText = await response.text();
-    
+
     // Log detailed information
     console.log('Ashby API Response Status:', response.status);
     console.log('Ashby API Response Headers:', Object.fromEntries(response.headers.entries()));
     console.log('Ashby API Response Body:', responseText);
-    
+
     // Parse Ashby response
     let ashbyResponse;
     try {
@@ -114,15 +120,15 @@ export default async function handler(req, res) {
     } catch (e) {
       ashbyResponse = { success: false, error: 'Invalid JSON response' };
     }
-    
+
     // Check both HTTP status AND Ashby's success field
     if (response.ok && ashbyResponse.success) {
       console.log('✅ Application submitted successfully to Ashby');
       res.status(200).json({ success: true, message: 'Application submitted successfully!' });
     } else {
       console.error('❌ Ashby API error:', response.status, ashbyResponse);
-      res.status(400).json({ 
-        success: false, 
+      res.status(400).json({
+        success: false,
         error: ashbyResponse.errors ? ashbyResponse.errors.join(', ') : 'Failed to submit application',
         details: responseText,
         status: response.status,
@@ -133,8 +139,8 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Server error:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       error: 'Internal server error',
       details: error.message
     });
