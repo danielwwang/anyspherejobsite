@@ -1,24 +1,20 @@
-// Polyfill for File/Blob in Node.js environment
+// Polyfill File for Node.js if not available
 if (typeof File === 'undefined') {
   global.File = class File {
-    constructor(bits, name, options = {}) {
-      this.name = name;
-      this.type = options.type || '';
-      this.size = bits.reduce((acc, bit) => acc + bit.length, 0);
-      this._bits = bits;
+    constructor(chunks, filename, options = {}) {
+      this.name = filename;
+      this.type = options.type || 'application/octet-stream';
+      this.size = chunks.reduce((size, chunk) => size + chunk.length, 0);
+      this._chunks = chunks;
     }
     
     stream() {
-      return new ReadableStream({
-        start(controller) {
-          this._bits.forEach(bit => controller.enqueue(bit));
-          controller.close();
-        }
-      });
+      const { Readable } = require('stream');
+      return Readable.from(Buffer.concat(this._chunks));
     }
     
     arrayBuffer() {
-      return Promise.resolve(Buffer.concat(this._bits).buffer);
+      return Promise.resolve(Buffer.concat(this._chunks).buffer);
     }
   };
 }
@@ -73,11 +69,13 @@ export default async function handler(req, res) {
         // Convert base64 to buffer
         const buffer = Buffer.from(resume.data, 'base64');
         
-        // Append the file buffer directly to form data
-        formData.append('resume_file', buffer, {
-          filename: resume.name || 'resume.pdf',
-          contentType: resume.type || 'application/pdf'
+        // Create a proper File object
+        const file = new File([buffer], resume.name || 'resume.pdf', {
+          type: resume.type || 'application/pdf'
         });
+        
+        // Append the file to form data
+        formData.append('resume_file', file);
         console.log('📎 Resume file added:', resume.name, resume.type, buffer.length + ' bytes');
       } catch (fileError) {
         console.error('❌ Error processing resume file:', fileError);
