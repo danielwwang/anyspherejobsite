@@ -43,8 +43,19 @@ export default async function handler(req, res) {
     }));
     
     // Add resume file if provided
-    if (resume) {
-      formData.append('resume_file', resume);
+    if (resume && resume.data) {
+      // Convert base64 back to binary data
+      const buffer = Buffer.from(resume.data, 'base64');
+      
+      // Append the buffer directly with filename
+      formData.append('resume_file', buffer, {
+        filename: resume.name || 'resume.pdf',
+        contentType: resume.type || 'application/octet-stream'
+      });
+      
+      console.log('📎 Resume file added:', resume.name, resume.type, buffer.length + ' bytes');
+    } else {
+      console.log('⚠️ No resume file provided or invalid format');
     }
 
     // Submit to Ashby API
@@ -74,16 +85,26 @@ export default async function handler(req, res) {
     console.log('Ashby API Response Headers:', Object.fromEntries(response.headers.entries()));
     console.log('Ashby API Response Body:', responseText);
     
-    if (response.ok) {
+    // Parse Ashby response
+    let ashbyResponse;
+    try {
+      ashbyResponse = JSON.parse(responseText);
+    } catch (e) {
+      ashbyResponse = { success: false, error: 'Invalid JSON response' };
+    }
+    
+    // Check both HTTP status AND Ashby's success field
+    if (response.ok && ashbyResponse.success) {
       console.log('✅ Application submitted successfully to Ashby');
       res.status(200).json({ success: true, message: 'Application submitted successfully!' });
     } else {
-      console.error('❌ Ashby API error:', response.status, responseText);
+      console.error('❌ Ashby API error:', response.status, ashbyResponse);
       res.status(400).json({ 
         success: false, 
-        error: 'Failed to submit application',
+        error: ashbyResponse.errors ? ashbyResponse.errors.join(', ') : 'Failed to submit application',
         details: responseText,
         status: response.status,
+        ashbyError: ashbyResponse.errorInfo?.code,
         ashbyResponse: responseText
       });
     }
