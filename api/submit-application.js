@@ -1,3 +1,28 @@
+// Polyfill for File/Blob in Node.js environment
+if (typeof File === 'undefined') {
+  global.File = class File {
+    constructor(bits, name, options = {}) {
+      this.name = name;
+      this.type = options.type || '';
+      this.size = bits.reduce((acc, bit) => acc + bit.length, 0);
+      this._bits = bits;
+    }
+    
+    stream() {
+      return new ReadableStream({
+        start(controller) {
+          this._bits.forEach(bit => controller.enqueue(bit));
+          controller.close();
+        }
+      });
+    }
+    
+    arrayBuffer() {
+      return Promise.resolve(Buffer.concat(this._bits).buffer);
+    }
+  };
+}
+
 export default async function handler(req, res) {
   // Enable CORS for your domain
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -35,28 +60,24 @@ export default async function handler(req, res) {
       "fieldSubmissions": [
         {"path": "_systemfield_name", "value": name},
         {"path": "_systemfield_email", "value": email},
-        {"path": "_systemfield_resume", "value": "resume_file"},
         {"path": "_systemfield_linkedin", "value": linkedin},
         {"path": "_systemfield_github", "value": github},
         {"path": "_systemfield_cover_letter", "value": projectNote}
       ]
     }));
     
-    // Add resume file if provided
-    if (resume && resume.data) {
-      // Convert base64 back to binary data
-      const buffer = Buffer.from(resume.data, 'base64');
-      
-      // Append the buffer directly with filename
-      formData.append('resume_file', buffer, {
-        filename: resume.name || 'resume.pdf',
-        contentType: resume.type || 'application/octet-stream'
-      });
-      
-      console.log('📎 Resume file added:', resume.name, resume.type, buffer.length + ' bytes');
-    } else {
-      console.log('⚠️ No resume file provided or invalid format');
-    }
+    // Temporarily skip file upload to test other fields
+    console.log('⚠️ Temporarily skipping file upload to test field validation');
+    
+    // TODO: Fix file upload later
+    // if (resume && resume.data) {
+    //   const buffer = Buffer.from(resume.data, 'base64');
+    //   const file = new File([buffer], resume.name || 'resume.pdf', {
+    //     type: resume.type || 'application/pdf'
+    //   });
+    //   formData.append('resume_file', file);
+    //   console.log('📎 Resume file added:', resume.name, resume.type, buffer.length + ' bytes');
+    // }
 
     // Submit to Ashby API
     const apiKey = process.env.ASHBY_API_KEY;
