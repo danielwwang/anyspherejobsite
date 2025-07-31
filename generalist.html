@@ -282,7 +282,7 @@
             <label for="resume">Resume *</label>
             <div class="file-input" onclick="document.getElementById('resume').click()">
               <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required style="display: none;">
-              <span id="file-text">📎 Upload File or drag and drop here</span>
+              <span id="file-text">Upload File or drag and drop here</span>
             </div>
           </div>
           
@@ -301,7 +301,7 @@
             <textarea id="project-note" name="project-note" placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
           </div>
           
-          <button type="submit" class="submit-btn">Submit Application 🚀</button>
+          <button type="submit" class="submit-btn">Submit Application</button>
         </form>
       </div>
     </div>
@@ -311,7 +311,7 @@
     // Handle file input display
     document.getElementById('resume').addEventListener('change', function(e) {
       const fileName = e.target.files[0]?.name;
-      document.getElementById('file-text').textContent = fileName || '📎 Upload File or drag and drop here';
+      document.getElementById('file-text').textContent = fileName || 'Upload File or drag and drop here';
     });
     
 
@@ -448,9 +448,9 @@
         const result = await response.json();
         
         if (response.ok && result.success) {
-          showSuccessMessage('Application submitted successfully! 🎉');
+          showSuccessMessage('Application submitted successfully!');
           document.getElementById('application-form').reset();
-          document.getElementById('file-text').textContent = '📎 Upload File or drag and drop here';
+          document.getElementById('file-text').textContent = 'Upload File or drag and drop here';
         } else {
           console.error('Application submission failed:', result);
           const errorMessage = result.details && Array.isArray(result.details) 

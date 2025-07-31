@@ -233,7 +233,7 @@
             <label for="resume">Resume *</label>
             <div class="file-input" onclick="document.getElementById('resume').click()">
               <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required style="display: none;">
-              <span id="file-text">📎 Upload File or drag and drop here</span>
+              <span id="file-text">Upload File or drag and drop here</span>
             </div>
           </div>
           
@@ -252,7 +252,7 @@
             <textarea id="project-note" name="project-note" placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
           </div>
           
-          <button type="submit" class="submit-btn">Submit Application 🚀</button>
+          <button type="submit" class="submit-btn">Submit Application</button>
         </form>
       </div>
     </div>
@@ -261,7 +261,7 @@
   <script>
     document.getElementById('resume').addEventListener('change', function(e) {
       const fileName = e.target.files[0]?.name;
-      document.getElementById('file-text').textContent = fileName || '📎 Upload File or drag and drop here';
+      document.getElementById('file-text').textContent = fileName || 'Upload File or drag and drop here';
     });
     
         // Handle form submission - submit via Vercel API
@@ -309,18 +309,18 @@
         });
 
         const result = await response.json();
-        console.log('📥 Server response:', result);
+        console.log('Server response:', result);
 
         if (response.ok && result.success) {
-          alert('Application submitted successfully! 🎉');
+          alert('Application submitted successfully!');
           document.getElementById('application-form').reset();
-          document.getElementById('file-text').textContent = '📎 Upload File or drag and drop here';
+          document.getElementById('file-text').textContent = 'Upload File or drag and drop here';
         } else {
-          console.error('❌ Application failed:', result);
+          console.error('Application failed:', result);
           alert('Error submitting application: ' + (result.error || 'Please try again.'));
         }
       } catch (error) {
-        console.error('❌ Network error:', error);
+        console.error('Network error:', error);
         alert('Error submitting application. Please check your connection and try again.');
       }
     }
