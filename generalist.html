@@ -19,6 +19,7 @@
       --border-color: #333;
       --success-color: #10b981;
       --error-color: #ef4444;
+      --required-asterisk: #a855f7;
       --spacing-xs: 0.5rem;
       --spacing-sm: 1rem;
       --spacing-md: 1.5rem;
@@ -111,9 +112,11 @@
     .form-container {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 24px;
+      border-radius: 12px;
+      padding: 32px;
       scroll-margin-top: var(--spacing-lg);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
     }
     .autofill-section {
       background: var(--bg-tertiary);
@@ -146,60 +149,87 @@
       font-weight: 500;
       color: #ffffff;
     }
+    
+    label .required-asterisk {
+      color: var(--required-asterisk);
+      font-weight: 600;
+      margin-left: 2px;
+    }
     input, textarea {
       width: 100%;
-      padding: 12px 16px;
+      padding: 14px 16px;
       border: 1px solid #333;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 14px;
       font-family: inherit;
       box-sizing: border-box;
       background: #1a1a1a;
       color: #ffffff;
+      transition: all 0.2s ease;
     }
     input:focus, textarea:focus {
-      border-color: #6366f1;
+      border-color: var(--accent-color);
       outline: none;
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      background: #222;
     }
     input::placeholder, textarea::placeholder {
       color: #666;
+    }
+    input:hover, textarea:hover {
+      border-color: #444;
+      background: #1f1f1f;
     }
     .file-input {
       border: 2px dashed #333;
       padding: 40px 20px;
       text-align: center;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       background: #1a1a1a;
-      transition: border-color 0.2s;
+      transition: all 0.2s ease;
+      color: #888;
     }
     .file-input:hover {
-      border-color: #6366f1;
+      border-color: var(--accent-color);
+      background: #1f1f1f;
+      color: #ccc;
     }
     .submit-btn {
       width: 100%;
-      padding: 12px;
-      background: #6366f1;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 16px;
       cursor: pointer;
-      margin-top: 1rem;
-      font-weight: 500;
+      margin-top: 1.5rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     }
     .submit-btn:hover {
-      background: #5855eb;
+      background: linear-gradient(135deg, var(--accent-hover), var(--accent-color));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+    .submit-btn:active {
+      transform: translateY(0);
     }
     .question-section {
-      margin-top: 2rem;
+      margin-top: 2.5rem;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
     .question-title {
       font-size: 1.1rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
       color: #ffffff;
+      line-height: 1.4;
     }
     .question-description {
       color: #888;
@@ -269,17 +299,17 @@
 
         <form id="application-form">
           <div class="form-group">
-            <label for="name">Name *</label>
+            <label for="name">Name<span class="required-asterisk">*</span></label>
             <input type="text" id="name" name="name" placeholder="Type here..." required>
           </div>
           
           <div class="form-group">
-            <label for="email">Email *</label>
+            <label for="email">Email<span class="required-asterisk">*</span></label>
             <input type="email" id="email" name="email" placeholder="hello@example.com..." required>
           </div>
           
           <div class="form-group">
-            <label for="resume">Resume *</label>
+            <label for="resume">Resume<span class="required-asterisk">*</span></label>
             <div class="file-input" onclick="document.getElementById('resume').click()">
               <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required style="display: none;">
               <span id="file-text">📎 Upload File or drag and drop here</span>
@@ -287,17 +317,17 @@
           </div>
           
           <div class="form-group">
-            <label for="linkedin">LinkedIn URL *</label>
+            <label for="linkedin">LinkedIn URL<span class="required-asterisk">*</span></label>
             <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile" required>
           </div>
           
           <div class="form-group">
-            <label for="github">GitHub Profile *</label>
+            <label for="github">GitHub Profile<span class="required-asterisk">*</span></label>
             <input type="url" id="github" name="github" placeholder="https://github.com/yourusername" required>
           </div>
           
           <div class="question-section">
-            <div class="question-title">Please write a short note on a project you're proud of: *</div>
+            <div class="question-title">Please write a short note on a project you're proud of:<span class="required-asterisk">*</span></div>
             <textarea id="project-note" name="project-note" placeholder="Type your answer..." rows="6" style="margin-top: 1rem;" required></textarea>
           </div>
           
