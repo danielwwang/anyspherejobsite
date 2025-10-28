@@ -1,0 +1,24 @@
+{
+  "name": "cursor-job-site-analytics-tests",
+  "version": "1.0.0",
+  "description": "Analytics test suite for Cursor job site",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/*.test.js"],
+    "collectCoverageFrom": [
+      "../api/*.js",
+      "../*.html"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "html"]
+  }
+}
