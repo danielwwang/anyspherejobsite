@@ -226,6 +226,7 @@
       margin-bottom: 1rem;
     }
   </style>
+  <script src="analytics.js" defer></script>
 </head>
 <body>
   <a href="index.html" class="back-link">← Back to Careers</a>
@@ -448,6 +449,7 @@
         const result = await response.json();
         
         if (response.ok && result.success) {
+          try { window.analytics && window.analytics.track && window.analytics.track('application_submitted', { jobPostingId: '36e69353-0452-4bf6-9f35-b1e7307959a7' }); } catch (e) {}
           showSuccessMessage('Application submitted successfully!');
           document.getElementById('application-form').reset();
           document.getElementById('file-text').textContent = 'Upload File or drag and drop here';
@@ -456,14 +458,17 @@
           const errorMessage = result.details && Array.isArray(result.details) 
             ? result.details.join(', ')
             : result.error || 'Please try again later';
+          try { window.analytics && window.analytics.track && window.analytics.track('application_failed', { jobPostingId: '36e69353-0452-4bf6-9f35-b1e7307959a7', error: errorMessage }); } catch (e) {}
           showErrorMessage('Submission failed: ' + errorMessage);
         }
       } catch (error) {
         clearTimeout(timeoutId);
         if (error.name === 'AbortError') {
+          try { window.analytics && window.analytics.track && window.analytics.track('application_failed', { jobPostingId: '36e69353-0452-4bf6-9f35-b1e7307959a7', error: 'timeout' }); } catch (e) {}
           showErrorMessage('Request timed out. Please check your connection and try again.');
         } else {
           console.error('Network error:', error);
+          try { window.analytics && window.analytics.track && window.analytics.track('application_failed', { jobPostingId: '36e69353-0452-4bf6-9f35-b1e7307959a7', error: 'network' }); } catch (e) {}
           showErrorMessage('Network error. Please check your connection and try again.');
         }
       }

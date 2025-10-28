@@ -220,6 +220,7 @@
       border-radius: 2px;
     }
   </style>
+  <script src="analytics.js" defer></script>
   </head>
   <body>
     <div class="hero-section"></div>
@@ -401,6 +402,23 @@
     document.addEventListener('DOMContentLoaded', () => {
       const loader = new JobTitleLoader();
       loader.loadJobTitles();
+
+      // Analytics: track job link clicks
+      try {
+        const links = document.querySelectorAll('.job-link[data-job-id]');
+        links.forEach(link => {
+          link.addEventListener('click', () => {
+            const jobId = link.getAttribute('data-job-id');
+            const href = link.getAttribute('href');
+            const text = link.textContent;
+            if (window.analytics && typeof window.analytics.track === 'function') {
+              window.analytics.track('job_link_click', { jobPostingId: jobId, href, text });
+            }
+          });
+        });
+      } catch (e) {
+        // no-op
+      }
     });
   </script>
 </body>

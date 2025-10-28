@@ -178,6 +178,7 @@
       margin-bottom: 1rem;
     }
   </style>
+  <script src="analytics.js" defer></script>
 </head>
 <body>
   <a href="index.html" class="back-link">← Back to Careers</a>
@@ -315,15 +316,18 @@
         console.log('Server response:', result);
 
         if (response.ok && result.success) {
+          try { window.analytics && window.analytics.track && window.analytics.track('application_submitted', { jobPostingId: '61e4677d-cf3d-458a-bf6c-02287d5d2c39' }); } catch (e) {}
           alert('Application submitted successfully!');
           document.getElementById('application-form').reset();
           document.getElementById('file-text').textContent = 'Upload File or drag and drop here';
         } else {
           console.error('Application failed:', result);
+          try { window.analytics && window.analytics.track && window.analytics.track('application_failed', { jobPostingId: '61e4677d-cf3d-458a-bf6c-02287d5d2c39', error: result.error || 'unknown' }); } catch (e) {}
           alert('Error submitting application: ' + (result.error || 'Please try again.'));
         }
       } catch (error) {
         console.error('Network error:', error);
+        try { window.analytics && window.analytics.track && window.analytics.track('application_failed', { jobPostingId: '61e4677d-cf3d-458a-bf6c-02287d5d2c39', error: 'network' }); } catch (e) {}
         alert('Error submitting application. Please check your connection and try again.');
       }
     }
