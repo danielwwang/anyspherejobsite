@@ -226,8 +226,10 @@
       margin-bottom: 1rem;
     }
   </style>
-</head>
-<body>
+  </head>
+  <body>
+  <!-- Analytics Integration -->
+  <script src="analytics.js"></script>
   <a href="index.html" class="back-link">← Back to Careers</a>
   
   <div class="content-wrapper">
@@ -318,6 +320,11 @@
     // Enhanced form submission with better UX and error handling
     document.getElementById('application-form').addEventListener('submit', async function(e) {
       e.preventDefault();
+      
+      // Track application start
+      if (window.analytics) {
+        window.analytics.trackApplicationStart('36e69353-0452-4bf6-9f35-b1e7307959a7', 'job_page');
+      }
       
       const submitBtn = document.querySelector('.submit-btn');
       const originalBtnText = submitBtn.textContent;
@@ -435,6 +442,7 @@
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
       
       try {
+        const startTime = Date.now();
         const response = await fetch('/api/submit-application', {
           method: 'POST',
           headers: {
@@ -445,14 +453,41 @@
         });
         
         clearTimeout(timeoutId);
+        const duration = Date.now() - startTime;
         const result = await response.json();
         
+        // Track API call
+        if (window.analytics) {
+          window.analytics.trackAPICall('/api/submit-application', 'POST', duration, response.ok);
+        }
+        
         if (response.ok && result.success) {
+          // Track successful application submission
+          if (window.analytics) {
+            window.analytics.trackApplicationSubmit('36e69353-0452-4bf6-9f35-b1e7307959a7', data);
+            window.analytics.trackEvent('application_success', {
+              jobId: '36e69353-0452-4bf6-9f35-b1e7307959a7',
+              duration,
+              formFields: Object.keys(data).length
+            });
+          }
+          
           showSuccessMessage('Application submitted successfully!');
           document.getElementById('application-form').reset();
           document.getElementById('file-text').textContent = 'Upload File or drag and drop here';
         } else {
           console.error('Application submission failed:', result);
+          
+          // Track application failure
+          if (window.analytics) {
+            window.analytics.trackError(new Error(result.error || 'Application submission failed'), {
+              jobId: '36e69353-0452-4bf6-9f35-b1e7307959a7',
+              context: 'application_submission',
+              statusCode: response.status,
+              duration
+            });
+          }
+          
           const errorMessage = result.details && Array.isArray(result.details) 
             ? result.details.join(', ')
             : result.error || 'Please try again later';
@@ -460,6 +495,15 @@
         }
       } catch (error) {
         clearTimeout(timeoutId);
+        
+        // Track submission error
+        if (window.analytics) {
+          window.analytics.trackError(error, {
+            jobId: '36e69353-0452-4bf6-9f35-b1e7307959a7',
+            context: 'application_submission'
+          });
+        }
+        
         if (error.name === 'AbortError') {
           showErrorMessage('Request timed out. Please check your connection and try again.');
         } else {

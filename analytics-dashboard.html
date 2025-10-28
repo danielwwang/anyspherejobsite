@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Dashboard - Cursor Careers</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background: #191C24;
+      color: #ffffff;
+    }
+    
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .dashboard-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: #6366f1;
+    }
+    
+    .time-selector {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .time-selector button {
+      background: #374151;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      margin: 0 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .time-selector button:hover {
+      background: #4b5563;
+    }
+    
+    .time-selector button.active {
+      background: #6366f1;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .metric-card {
+      background: #2a2d35;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border-left: 4px solid #6366f1;
+    }
+    
+    .metric-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #10b981;
+      margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+    
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .chart-card {
+      background: #2a2d35;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    
+    .chart-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+    
+    .chart-container {
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1f2937;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    
+    .bar-chart {
+      display: flex;
+      align-items: end;
+      height: 200px;
+      gap: 8px;
+      padding: 20px;
+    }
+    
+    .bar {
+      background: linear-gradient(to top, #6366f1, #8b5cf6);
+      border-radius: 4px 4px 0 0;
+      min-width: 30px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .bar:hover {
+      transform: scale(1.05);
+    }
+    
+    .bar-label {
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+    
+    .bar-value {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    
+    .table-container {
+      background: #2a2d35;
+      border-radius: 8px;
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+    
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table th,
+    .data-table td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #374151;
+    }
+    
+    .data-table th {
+      background: #374151;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    
+    .data-table td {
+      color: #d1d5db;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #9ca3af;
+    }
+    
+    .error {
+      background: #7f1d1d;
+      color: #ef4444;
+      padding: 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
+    
+    .refresh-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #6366f1;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .refresh-btn:hover {
+      background: #5855eb;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-online {
+      background: #10b981;
+      animation: pulse 2s infinite;
+    }
+    
+    .status-offline {
+      background: #ef4444;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    .real-time-events {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      max-height: 400px;
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    
+    .event-item {
+      font-size: 12px;
+      background: #111827;
+      padding: 8px;
+      border-radius: 4px;
+      margin: 5px 0;
+      border-left: 3px solid #10b981;
+    }
+    
+    .event-time {
+      color: #6b7280;
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+  <button class="refresh-btn" onclick="refreshData()">
+    <span class="status-indicator" id="statusIndicator"></span>
+    Refresh
+  </button>
+
+  <div class="dashboard-header">
+    <h1>📊 Analytics Dashboard</h1>
+    <p>Real-time insights for Cursor Careers website</p>
+  </div>
+
+  <div class="time-selector">
+    <button onclick="setTimeRange('1h')" data-range="1h">Last Hour</button>
+    <button onclick="setTimeRange('24h')" data-range="24h" class="active">Last 24 Hours</button>
+    <button onclick="setTimeRange('7d')" data-range="7d">Last 7 Days</button>
+    <button onclick="setTimeRange('30d')" data-range="30d">Last 30 Days</button>
+  </div>
+
+  <div id="dashboardContent">
+    <div class="loading">Loading analytics data...</div>
+  </div>
+
+  <!-- Real-time events panel -->
+  <div class="real-time-events">
+    <h4>🔴 Live Events</h4>
+    <div id="liveEvents"></div>
+  </div>
+
+  <script>
+    let currentTimeRange = '24h';
+    let refreshInterval;
+    let isOnline = false;
+
+    class AnalyticsDashboard {
+      constructor() {
+        this.data = null;
+        this.liveEvents = [];
+        this.init();
+      }
+
+      async init() {
+        await this.loadData();
+        this.startAutoRefresh();
+        this.simulateLiveEvents(); // For demo purposes
+      }
+
+      async loadData() {
+        try {
+          const response = await fetch(`/api/analytics?range=${currentTimeRange}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            this.data = result.data;
+            this.renderDashboard();
+            this.setOnlineStatus(true);
+          } else {
+            throw new Error(result.error || 'Failed to load data');
+          }
+        } catch (error) {
+          console.error('Failed to load analytics data:', error);
+          this.renderError(error.message);
+          this.setOnlineStatus(false);
+        }
+      }
+
+      renderDashboard() {
+        if (!this.data) return;
+
+        const content = document.getElementById('dashboardContent');
+        content.innerHTML = `
+          ${this.renderMetrics()}
+          ${this.renderCharts()}
+          ${this.renderTables()}
+        `;
+      }
+
+      renderMetrics() {
+        const { overview, engagement } = this.data;
+        
+        return `
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-value">${overview.totalEvents.toLocaleString()}</div>
+              <div class="metric-label">Total Events</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">${overview.uniqueSessions.toLocaleString()}</div>
+              <div class="metric-label">Unique Sessions</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">${overview.pageViews.toLocaleString()}</div>
+              <div class="metric-label">Page Views</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">${engagement.jobClicks.toLocaleString()}</div>
+              <div class="metric-label">Job Clicks</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">${engagement.applications.toLocaleString()}</div>
+              <div class="metric-label">Applications</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value">${engagement.conversionRate}%</div>
+              <div class="metric-label">Conversion Rate</div>
+            </div>
+          </div>
+        `;
+      }
+
+      renderCharts() {
+        return `
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-title">Top Pages</div>
+              ${this.renderBarChart(this.data.topPages, 'page')}
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Event Breakdown</div>
+              ${this.renderBarChart(Object.entries(this.data.eventBreakdown), 'event')}
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Popular Jobs</div>
+              ${this.renderBarChart(this.data.topJobs, 'job')}
+            </div>
+          </div>
+        `;
+      }
+
+      renderBarChart(data, type) {
+        if (!data || data.length === 0) {
+          return '<div class="chart-container">No data available</div>';
+        }
+
+        const maxValue = Math.max(...data.map(([, value]) => value));
+        
+        const bars = data.slice(0, 8).map(([label, value]) => {
+          const height = (value / maxValue) * 160;
+          const shortLabel = this.truncateLabel(label, type);
+          
+          return `
+            <div class="bar" style="height: ${height}px;" title="${label}: ${value}">
+              <div class="bar-value">${value}</div>
+              <div class="bar-label">${shortLabel}</div>
+            </div>
+          `;
+        }).join('');
+
+        return `<div class="chart-container"><div class="bar-chart">${bars}</div></div>`;
+      }
+
+      truncateLabel(label, type) {
+        if (type === 'job') {
+          // Convert job ID to readable name
+          const jobNames = {
+            '36e69353-0452-4bf6-9f35-b1e7307959a7': 'Generalist',
+            '0aa0650b-f93c-416e-9e2f-4fdf1556fd14': 'ML Research',
+            '3551cdaa-cf08-4c04-adbe-a968185bc769': 'Product',
+            '54a9cfcd-570a-4e9c-b52c-bd2336c60991': 'Enterprise',
+            '6f92f594-f76c-47eb-8c45-09c6b140b512': 'Infrastructure',
+            '61e4677d-cf3d-458a-bf6c-02287d5d2c39': 'Emerging AE',
+            '635af96e-4fd6-458f-839c-06b9dde86559': 'Enterprise AE'
+          };
+          return jobNames[label] || label.substring(0, 8) + '...';
+        }
+        
+        if (type === 'page') {
+          return label.replace('.html', '').replace('/', '');
+        }
+        
+        return label.length > 12 ? label.substring(0, 12) + '...' : label;
+      }
+
+      renderTables() {
+        return `
+          <div class="charts-grid">
+            <div class="table-container">
+              <div class="chart-title">Recent Applications</div>
+              ${this.renderApplicationsTable()}
+            </div>
+            <div class="table-container">
+              <div class="chart-title">Recent Errors</div>
+              ${this.renderErrorsTable()}
+            </div>
+          </div>
+        `;
+      }
+
+      renderApplicationsTable() {
+        const applications = this.data.recentApplications;
+        
+        if (!applications || applications.length === 0) {
+          return '<p>No recent applications</p>';
+        }
+
+        const rows = applications.map(app => `
+          <tr>
+            <td>${this.formatJobId(app.jobId)}</td>
+            <td>${new Date(app.timestamp).toLocaleString()}</td>
+            <td>${app.sessionId.substring(0, 8)}...</td>
+          </tr>
+        `).join('');
+
+        return `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Job</th>
+                <th>Time</th>
+                <th>Session</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+
+      renderErrorsTable() {
+        const errors = this.data.recentErrors;
+        
+        if (!errors || errors.length === 0) {
+          return '<p>No recent errors</p>';
+        }
+
+        const rows = errors.map(error => `
+          <tr>
+            <td>${error.message.substring(0, 50)}...</td>
+            <td>${new Date(error.timestamp).toLocaleString()}</td>
+            <td>${error.url ? error.url.split('/').pop() : 'Unknown'}</td>
+          </tr>
+        `).join('');
+
+        return `
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Error</th>
+                <th>Time</th>
+                <th>Page</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+
+      formatJobId(jobId) {
+        const jobNames = {
+          '36e69353-0452-4bf6-9f35-b1e7307959a7': 'Software Engineer, Generalist',
+          '0aa0650b-f93c-416e-9e2f-4fdf1556fd14': 'Software Engineer, ML Research',
+          '3551cdaa-cf08-4c04-adbe-a968185bc769': 'Software Engineer, Product',
+          '54a9cfcd-570a-4e9c-b52c-bd2336c60991': 'Product Engineer, Enterprise',
+          '6f92f594-f76c-47eb-8c45-09c6b140b512': 'Software Engineer, Infrastructure',
+          '61e4677d-cf3d-458a-bf6c-02287d5d2c39': 'Emerging Enterprise AE',
+          '635af96e-4fd6-458f-839c-06b9dde86559': 'Enterprise AE'
+        };
+        return jobNames[jobId] || jobId.substring(0, 8) + '...';
+      }
+
+      renderError(message) {
+        const content = document.getElementById('dashboardContent');
+        content.innerHTML = `
+          <div class="error">
+            <strong>Error loading analytics data:</strong><br>
+            ${message}
+          </div>
+        `;
+      }
+
+      setOnlineStatus(online) {
+        isOnline = online;
+        const indicator = document.getElementById('statusIndicator');
+        indicator.className = `status-indicator ${online ? 'status-online' : 'status-offline'}`;
+      }
+
+      startAutoRefresh() {
+        // Refresh every 30 seconds
+        refreshInterval = setInterval(() => {
+          this.loadData();
+        }, 30000);
+      }
+
+      simulateLiveEvents() {
+        // Simulate live events for demo
+        const eventTypes = [
+          { name: 'page_view', icon: '👁️' },
+          { name: 'job_click', icon: '🎯' },
+          { name: 'application_start', icon: '📝' },
+          { name: 'form_interaction', icon: '⌨️' },
+          { name: 'api_call', icon: '🔄' }
+        ];
+
+        setInterval(() => {
+          const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+          this.addLiveEvent(eventType);
+        }, 3000 + Math.random() * 7000); // Random interval between 3-10 seconds
+      }
+
+      addLiveEvent(eventType) {
+        const event = {
+          ...eventType,
+          timestamp: Date.now(),
+          id: Math.random().toString(36).substr(2, 9)
+        };
+
+        this.liveEvents.unshift(event);
+        
+        // Keep only last 10 events
+        if (this.liveEvents.length > 10) {
+          this.liveEvents.pop();
+        }
+
+        this.renderLiveEvents();
+      }
+
+      renderLiveEvents() {
+        const container = document.getElementById('liveEvents');
+        container.innerHTML = this.liveEvents.map(event => `
+          <div class="event-item">
+            <strong>${event.icon} ${event.name.replace('_', ' ')}</strong><br>
+            <span class="event-time">${new Date(event.timestamp).toLocaleTimeString()}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Global functions
+    function setTimeRange(range) {
+      currentTimeRange = range;
+      
+      // Update active button
+      document.querySelectorAll('.time-selector button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-range="${range}"]`).classList.add('active');
+      
+      // Reload data
+      dashboard.loadData();
+    }
+
+    function refreshData() {
+      dashboard.loadData();
+    }
+
+    // Initialize dashboard
+    const dashboard = new AnalyticsDashboard();
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    });
+  </script>
+</body>
+</html>

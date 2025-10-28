@@ -222,6 +222,8 @@
   </style>
   </head>
   <body>
+  <!-- Analytics Integration -->
+  <script src="analytics.js"></script>
     <div class="hero-section"></div>
     <div class="content-container">
     <h1 class="main-title">Engineering Genius</h1>
@@ -339,18 +341,51 @@
         this.loadingStates.set(jobId, true);
         
         try {
+          const startTime = Date.now();
           const data = await this.fetchJobTitle(jobId);
+          const duration = Date.now() - startTime;
+          
+          // Track API call analytics
+          if (window.analytics) {
+            window.analytics.trackAPICall('/api/get-job-title', 'POST', duration, data?.success || false);
+          }
           
           if (data?.success && data?.title) {
             link.textContent = data.title;
             link.setAttribute('aria-label', `Apply for ${data.title}`);
+            
+            // Track successful job title load
+            if (window.analytics) {
+              window.analytics.trackEvent('job_title_loaded', {
+                jobId,
+                title: data.title,
+                duration,
+                cached: data.cached || false
+              });
+            }
           } else {
             console.error(`Failed to load title for ${jobId}:`, data?.error || 'Unknown error');
             this.handleLoadError(link, jobId);
+            
+            // Track job title load error
+            if (window.analytics) {
+              window.analytics.trackError(new Error(data?.error || 'Failed to load job title'), {
+                jobId,
+                context: 'job_title_loading'
+              });
+            }
           }
         } catch (error) {
           console.error(`Error loading title for ${jobId}:`, error);
           this.handleLoadError(link, jobId);
+          
+          // Track error
+          if (window.analytics) {
+            window.analytics.trackError(error, {
+              jobId,
+              context: 'job_title_loading'
+            });
+          }
         } finally {
           this.loadingStates.set(jobId, false);
         }
